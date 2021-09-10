@@ -1,41 +1,73 @@
 <?php
+
+// посм про namespace
+use Bitrix\Main\Loader;
+use Bitrix\Main\LoaderException;
+
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) {
     die();
 }
 
 class MyCatalogComponent extends CBitrixComponent
 {
+    const IMAGE_SIZE = ['width' => 256, 'height' => 256];
+
+
+    /**
+     * @return mixed|void|null
+     * @throws LoaderException
+     */
     public function executeComponent()
     {
-        $elements = [
-            'ID' => null,
-            'NAME' => null,
-            'PREVIEW_PICTURE' => null,
-            'PREVIEW_TEXT' => null,
-            'PROPERTY_LIN_PR' => null
+        $this->includeModules();
+
+        $this->arResult = ['ELEMENTS' => $this->getItems()];
+
+        $this->includeComponentTemplate();
+    }
+
+
+    /**
+     * @return array
+     */
+    private function getItems(): array
+    {
+        $items = [];
+        $filter = [
+            'IBLOCK_ID' => $this->arParams['IBLOCK_ID'],
+            'ACTIVE' => 'Y',
         ];
 
-        if (CModule::IncludeModule("iblock")):
-            // ID инфоблока из которого выводим элементы
-            $iblock_id = 5;
-            $elements = CIBlockElement::GetList (
-                // Сортировка элементов
-                Array("ID" => "ASC"),
-                Array("IBLOCK_ID" => $iblock_id),
-                false,
-                false,
-                // Перечисляесм все свойства элементов, которые планируем выводить
-                Array(
-                    'ID',
-                    'NAME',
-                    'PREVIEW_PICTURE',
-                    'PREVIEW_TEXT',
-                    'PROPERTY_LIN_PR'
-                )
-            );
-        endif;
+        $select = [
+            'ID',
+            'NAME',
+            'PREVIEW_PICTURE',
+            'PREVIEW_TEXT',
+            'DETAIL_PAGE_URL'
+        ];
 
-        $this->arResult = ['какжесложнотоблять' => 2, 'ELEMENTS' => $elements];
-        $this->includeComponentTemplate();
+        $elements = CIBlockElement::GetList (
+            [],
+            $filter,
+            false,
+            false,
+            // Перечисляесм все свойства элементов, которые планируем выводить
+            $select
+        );
+
+        while($element = $elements->GetNext()){
+            $element['PREVIEW_PICTURE_SRC'] = CFile::ResizeImageGet($element["PREVIEW_PICTURE"], $this::IMAGE_SIZE)['src'];
+            $items[] = $element;
+        }
+
+        return $items;
+    }
+
+    /**
+     * @throws LoaderException
+     */
+    private function includeModules(): void
+    {
+        Loader::includeModule('iblock');
     }
 }

@@ -12,7 +12,7 @@ $APPLICATION->SetTitle("Хто я");
     <?$APPLICATION->IncludeComponent(
         'my_components:my_catalog',         // имя компонента
         'my_template',      // шаблон компонента, пустая строка если шаблон по умолчанию
-        $arParams=array(),     // параметры
+        $arParams=array('IBLOCK_ID' => 5),     // параметры
         $parentComponent=null,  // null или объект родительского компонента
         $arFunctionParams=array()
     );?>
