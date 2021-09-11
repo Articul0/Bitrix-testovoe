@@ -10,7 +10,8 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) {
 
 class MyCatalogComponent extends CBitrixComponent
 {
-    const IMAGE_SIZE = ['width' => 256, 'height' => 256];
+    const IMAGE_SIZE = ['width' => 230, 'height' => 230];
+    const PREVIEW_TEXT_LENGTH = 100;
 
 
     /**
@@ -56,7 +57,18 @@ class MyCatalogComponent extends CBitrixComponent
         );
 
         while($element = $elements->GetNext()){
-            $element['PREVIEW_PICTURE_SRC'] = CFile::ResizeImageGet($element["PREVIEW_PICTURE"], $this::IMAGE_SIZE)['src'];
+            // Обрезаем текст анонса
+            if (strlen($element['PREVIEW_TEXT']) > $this::PREVIEW_TEXT_LENGTH):
+                if (strcasecmp(substr($element['PREVIEW_TEXT'], $this::PREVIEW_TEXT_LENGTH, 1), ' ') == 0):
+                    $element['PREVIEW_TEXT_SRC'] = substr($element['PREVIEW_TEXT'], 0, $this::PREVIEW_TEXT_LENGTH - 2) . '...';
+                else:
+                    $element['PREVIEW_TEXT_SRC'] = substr($element['PREVIEW_TEXT'], 0, $this::PREVIEW_TEXT_LENGTH - 1) . '...';
+                endif;
+            else:
+                $element['PREVIEW_TEXT_SRC'] = $element['PREVIEW_TEXT'];
+            endif;
+            // Масштабируем картинку анонса
+            $element['PREVIEW_PICTURE_SRC'] = CFile::ResizeImageGet($element["PREVIEW_PICTURE"], $this::IMAGE_SIZE, BX_RESIZE_IMAGE_EXACT)['src'];
             $items[] = $element;
         }
 
