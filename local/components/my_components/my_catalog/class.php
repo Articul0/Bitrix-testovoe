@@ -25,11 +25,15 @@ class MyCatalogComponent extends CBitrixComponent
 
         $request = Context::getCurrent()->getRequest();
 
-        $elements = $this->getItems($request);
-        $this->arResult = ['ELEMENTS' => $elements];
+        $this->arResult = [];
 
-        $paginationParams = $this->getPaginationParams($request);
-        $this->arResult['PAGINATION_PARAMS'] = $paginationParams;
+        $elements = $this->getItems($request);
+
+        // Элементы каталога
+        $this->arResult['ELEMENTS'] = $elements['ITEMS'];
+
+        // Параметры, необходимые для корректной работы пагинации
+        $this->arResult['PAGINATION_PARAMS'] = $elements['PAGINATION_PARAMS'];
 
         // Передаём параметры сортировки и фильтра
         $this->arResult['SORT_NAME'] = $request['SORT_NAME'];
@@ -105,7 +109,11 @@ class MyCatalogComponent extends CBitrixComponent
             $element['PREVIEW_PICTURE_SRC'] = $this->resizeImage($element['PREVIEW_PICTURE']);
             $items[] = $element;
         }
-        return $items;
+
+        return Array(
+            'ITEMS' => $items,
+            'PAGINATION_PARAMS' => $this->getPaginationParams($request, $elements->NavPageCount)
+        );
     }
 
 
@@ -113,7 +121,7 @@ class MyCatalogComponent extends CBitrixComponent
      * @param $request
      * @return array
      */
-    private function getPaginationParams($request): array
+    private function getPaginationParams($request, $pagesCount): array
     {
         if ($request['FILTER'] !== null) {
             $filter = '&FILTER=' . $request['FILTER'];
@@ -125,8 +133,6 @@ class MyCatalogComponent extends CBitrixComponent
         } else {
             $sort = '';
         }
-
-        $pagesCount = $this->getPagesCount();
 
         $currentPage = $this->getCurrentPage((int) $request['PAGE'], $pagesCount);
 

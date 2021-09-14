@@ -5,7 +5,8 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) {
 
 $this->addExternalCss("/local/styles.css");
 
-//Bitrix\Main\Diag\Debug::dump($arResult['PAGINATION_PARAMS']['PAGES']);
+//Bitrix\Main\Diag\Debug::dump($arResult['ELEMENTS']);
+//Bitrix\Main\Diag\Debug::dump($arResult['PAGINATION_PARAMS']);
 
 ?>
 
@@ -29,11 +30,11 @@ $this->addExternalCss("/local/styles.css");
     foreach ($arResult['ELEMENTS'] as $itemId => $item):?>
         <div class="subwrapper">
             <h4><?= $item['NAME'] ?></h4>
-            <div class="url-link item">
-                <a><?= $item['DETAIL_PAGE_URL'] ?></a>
-            </div>
             <div class="item">
                 <img src="<?= $item['PREVIEW_PICTURE_SRC'] ?>">
+            </div>
+            <div class="url-link item">
+                <a href="#"><?= $item['DETAIL_PAGE_URL'] ?></a>
             </div>
             <div class="item">
                 <p><?= $item['PREVIEW_TEXT'] ?></p>
@@ -45,38 +46,32 @@ $this->addExternalCss("/local/styles.css");
 <div class="container">
     <?php
     if ($arResult['PAGINATION_PARAMS']['PAGES_COUNT'] > 1):
-        if ($arResult['PAGINATION_PARAMS']['PAGES_COUNT'] > 2):
-            if ($arResult['PAGINATION_PARAMS']['PAGES_COUNT'] > 6):
-                if ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] != 1):?>
-                    <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' .  ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] - 1) ?>"> Назад </a>
-                <?php endif; ?>
-                <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=1' ?>"> 1 </a>
-                <?php
-                if ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] > 4): ?>
-                    ...
-                <?php endif;
-                foreach ($arResult['PAGINATION_PARAMS']['PAGES'] as $page): ?>
-                    <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . $page ?>"> <?= $page ?> </a>
-                <?php endforeach;
-                if ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] < $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] - 3): ?>
-                    ...
-                <?php endif; ?>
-                <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] ?>"> <?php echo $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] ?> </a>
-                <?php
-                if ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] != $arResult['PAGINATION_PARAMS']['PAGES_COUNT']):?>
-                    <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' .  ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] + 1) ?>"> Вперёд </a>
-                <?php endif; ?>
-            <?php else: ?>
-                <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=1' ?>"> 1 </a>
-                <?php
-                foreach ($arResult['PAGINATION_PARAMS']['PAGES'] as $page): ?>
-                    <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . $page ?>"> <?= $page ?> </a>
-                <?php endforeach; ?>
-                <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] ?>"> <?php echo $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] ?> </a>
-            <?php endif;
-        else: ?>
+        if ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] != 1):?>
+        <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' .  ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] - 1) ?>"> Назад </a>
+        <?php endif;
+        if ($arResult['PAGINATION_PARAMS']['PAGES_COUNT'] > 6): ?>
             <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=1' ?>"> 1 </a>
-            <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] ?>"> 2 </a>
+            <?php
+            if ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] > 4): ?>
+                ...
+            <?php endif;
+            foreach ($arResult['PAGINATION_PARAMS']['PAGES'] as $page): ?>
+                <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . $page ?>"> <?= $page ?> </a>
+            <?php endforeach;
+            if ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] < $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] - 3): ?>
+                ...
+            <?php endif; ?>
+            <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] ?>"> <?php echo $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] ?> </a>
+        <?php else: ?>
+            <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=1' ?>"> 1 </a>
+            <?php
+            foreach ($arResult['PAGINATION_PARAMS']['PAGES'] as $page): ?>
+                <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . $page ?>"> <?= $page ?> </a>
+            <?php endforeach; ?>
+            <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] ?>"> <?php echo $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] ?> </a>
+        <?php endif;
+        if ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] != $arResult['PAGINATION_PARAMS']['PAGES_COUNT']):?>
+            <a href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' .  ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] + 1) ?>"> Вперёд </a>
         <?php endif;
     endif; ?>
 </div>
