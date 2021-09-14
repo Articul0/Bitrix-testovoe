@@ -1,0 +1,27 @@
+.wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.subwrapper {
+    position:relative;
+    padding: 10px;
+}
+
+.menu {
+    display: flex;
+    justify-content: space-between;
+}
+
+.item {
+    width: 230px;
+}
+
+.nav {
+
+}
+
+.url-link {
+
+}
