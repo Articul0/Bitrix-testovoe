@@ -6,7 +6,7 @@
 
 .subwrapper {
     position:relative;
-    padding: 10px;
+    padding: 20px;
 }
 
 .menu {
@@ -19,8 +19,19 @@
 }
 
 .nav {
-    text-align:center;
+    justify-content: center;
 }
 
-.url-link {
+.panel {
+    display: inline;
+}
+
+.sort-filter-links {
+    padding-left: 5px;
+    padding-right: 5px;
+    text-decoration: none;
+}
+
+.sort-filter-links:hover {
+    border-bottom: 1px solid #0D84FD;
 }
