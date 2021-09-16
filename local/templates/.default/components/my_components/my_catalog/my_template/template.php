@@ -6,7 +6,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) {
 $this->addExternalCss("/local/styles.css");
 
 //Bitrix\Main\Diag\Debug::dump($arResult['ELEMENTS']);
-//Bitrix\Main\Diag\Debug::dump($arResult['PAGINATION_PARAMS']);
+//Bitrix\Main\Diag\Debug::dump($arResult['PROPERTIES']);
 
 ?>
 
@@ -43,72 +43,21 @@ $this->addExternalCss("/local/styles.css");
 <?php endforeach; ?>
 </div>
 
-<div class="nav container">
-    <?php
-    // Если страница только одна, то панель пагинации не выводится
-    if ($arResult['PAGINATION_PARAMS']['PAGES_COUNT'] > 1):
 
-        // Проверяем активная ли первая страница
-        if ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] !== 1):?>
-            <li class="page-item">
-                <a class="page-link" href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' .  ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] - 1) ?>"> &laquo; </a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=1' ?>"> 1 </a>
-            </li>
-        <?php else: ?>
-            <li class="page-item active">
-                <a class="page-link" href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=1' ?>"> 1 </a>
-            </li>
-        <?php endif;
+<?php
+    $APPLICATION->IncludeComponent(
+        'bitrix:system.pagenavigation',
+        $arParams['PAGINATION_TEMPLATE'],
+        array(
+            'NAV_TITLE'   => 'Элементы',
+            'NAV_RESULT'  => $arResult['NAV'],
+            'SHOW_ALWAYS' => false
+        )
+    );
+?>
 
-        // Проверяем нужно ли многоточие после ссылки на первую страницу
-        if ($arResult['PAGINATION_PARAMS']['PAGES_COUNT'] > 6):
-            if ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] > 4): ?>
-                <li class="page-item">
-                    <a class="page-link" href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] - 5) ?>"> ... </a>
-                </li>
-            <?php endif;
-        endif;
 
-        // Расставляем номера страниц на панель пагинации
-        foreach ($arResult['PAGINATION_PARAMS']['PAGES'] as $page):
-            if ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] !== $page):?>
-                <li class="page-item">
-                    <a class="page-link" href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . $page ?>"> <?= $page ?> </a>
-                </li>
-            <?php else: ?>
-                <li class="page-item active">
-                    <a class="page-link" href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . $page ?>"> <?= $page ?> </a>
-                </li>
-            <?php endif; ?>
-        <?php endforeach;
 
-        // Проверяем нужно ли многоточие перед сылкой на последнюю страницу
-        if ($arResult['PAGINATION_PARAMS']['PAGES_COUNT'] > 6):
-            if ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] < $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] - 3): ?>
-                <li class="page-item">
-                    <a class="page-link" href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] + 5) ?>"> ... </a>
-                </li>
-            <?php endif;
-        endif;
-
-        // Проверяем активная ли последняя страница
-        if ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] !== $arResult['PAGINATION_PARAMS']['PAGES_COUNT']):?>
-            <li class="page-item">
-                <a class="page-link" href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] ?>"> <?php echo $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] ?> </a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' .  ($arResult['PAGINATION_PARAMS']['CURRENT_PAGE'] + 1) ?>"> &raquo; </a>
-            </li>
-        <?php else: ?>
-            <li class="page-item active">
-                <a class="page-link" href="/?<?=$arResult['PAGINATION_PARAMS']['SORT'] . $arResult['PAGINATION_PARAMS']['FILTER'] . '&PAGE=' . $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] ?>"> <?php echo $arResult['PAGINATION_PARAMS']['PAGES_COUNT'] ?> </a>
-            </li>
-        <?php endif;
-
-    endif; ?>
-</div>
 
 
 

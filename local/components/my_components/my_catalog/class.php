@@ -25,9 +25,7 @@ class MyCatalogComponent extends CBitrixComponent
 
         $request = Context::getCurrent()->getRequest();
 
-        $currentPage = $request['PAGE'];
-
-        $cacheParams = ['ELEMENTS_COUNT' => $this->arParams['ELEMENTS_PER_PAGE'], 'CURRENT_PAGE' => $currentPage];
+        $cacheParams = ['ELEMENTS_COUNT' => $this->arParams['ELEMENTS_PER_PAGE'], 'REQUEST' => $request];
 
 //        $test = CIBlockPropertyEnum::GetList(
 //            [],
@@ -53,6 +51,8 @@ class MyCatalogComponent extends CBitrixComponent
             // Параметры, необходимые для работы пагинации
             $this->arResult['PAGINATION_PARAMS'] = $elements['PAGINATION_PARAMS'];
 
+            $this->arResult['NAV'] = $elements['NAV'];
+
             // Передаём параметры сортировки
             $this->arResult['SORT_NAME'] = $request['SORT_NAME'];
             $this->arResult['SORT_ID'] = $request['SORT_ID'];
@@ -73,7 +73,6 @@ class MyCatalogComponent extends CBitrixComponent
             'IBLOCK_ID' => $this->arParams['IBLOCK_ID'],
             'ACTIVE' => 'Y',
         ];
-        //
         if ($request['FILTER'] ==='discounts') {
             $filter['PROPERTY_SPECIAL_OFFER_VALUE'] = 'Акция';
         } elseif ($request['FILTER'] ==='news') {
@@ -100,6 +99,13 @@ class MyCatalogComponent extends CBitrixComponent
             $sort['ID'] = 'DESC';
         }
 
+
+//        $nav = new \Bitrix\Main\UI\PageNavigation('');
+//        $nav->allowAllRecords(true)
+//            ->setPageSize($this->arParams['ELEMENTS_PER_PAGE'])
+//            ->initFromUri();
+
+
         $elements = CIBlockElement::GetList (
             $sort,
             $filter,
@@ -110,6 +116,8 @@ class MyCatalogComponent extends CBitrixComponent
             ),
             $select
         );
+
+        //$nav->setRecordCount($elements->NavRecordCount);
 
         //Bitrix\Main\Diag\Debug::dump($elements);
 
@@ -132,17 +140,18 @@ class MyCatalogComponent extends CBitrixComponent
 
         return Array(
             'ITEMS' => $items,
-            'PAGINATION_PARAMS' => $this->getPaginationParams($request, $elements->NavPageCount)
+            'PAGINATION_PARAMS' => $this->getPaginationParams($request, (int) $elements->NavPageCount),
+            'NAV' => $elements
         );
     }
 
 
     /**
      * @param $request
-     * @param float $pagesCount
+     * @param int $pagesCount
      * @return array
      */
-    private function getPaginationParams($request, float $pagesCount): array
+    private function getPaginationParams($request, int $pagesCount): array
     {
         if ($request['FILTER'] !== null) {
             $filter = '&FILTER=' . $request['FILTER'];
