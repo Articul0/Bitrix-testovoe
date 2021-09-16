@@ -35,7 +35,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) {
         if ($arResult['NavPageCount'] > 6):
             if ($arResult['NavPageNomer'] > 3): ?>
                 <li class="page-item">
-                    <a class="page-link" href="<?=$newUrlPathParams . 'PAGE=' . ($arResult['NavPageNomer'] - 5) ?>"> ... </a>
+                    <a class="page-link" href="<?=$newUrlPathParams . 'PAGE=' . ($arResult['NavPageNomer'] - 3) ?>"> ... </a>
                 </li>
             <?php endif;
         endif;
@@ -57,7 +57,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) {
         if ($arResult['NavPageCount'] > 6):
             if ($arResult['NavPageNomer'] < $arResult['NavPageCount'] - 2): ?>
                 <li class="page-item">
-                    <a class="page-link" href="<?=$newUrlPathParams . 'PAGE=' . ($arResult['NavPageNomer'] + 5) ?>"> ... </a>
+                    <a class="page-link" href="<?=$newUrlPathParams . 'PAGE=' . ($arResult['NavPageNomer'] + 3) ?>"> ... </a>
                 </li>
             <?php endif;
         endif;

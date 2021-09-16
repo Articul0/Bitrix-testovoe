@@ -27,57 +27,67 @@ class MyCatalogComponent extends CBitrixComponent
 
         $cacheParams = ['ELEMENTS_COUNT' => $this->arParams['ELEMENTS_PER_PAGE'], 'REQUEST' => $request];
 
-//        $test = CIBlockPropertyEnum::GetList(
-//            [],
-//            ['CODE' => 'SPECIAL_OFFER']
-//        );
-//
-//        while ($a = $test->GetNext()) {
-//            Bitrix\Main\Diag\Debug::dump($a);
-//        }
-
-
-
         if ($this->StartResultCache($this->arParams['CACHE_TIME'], $cacheParams)) {
-
 
             $this->arResult = [];
 
-            $elements = $this->getItems($request);
+            // Параметры для отображения полей фильтрации в шаблоне
+            $propertyParams = $this->getPropertyParams($this->arParams['FILTER_PROPERTY']);
+            $this->arResult['PROPERTY_PARAMS'] = $propertyParams;
+
+            $elements = $this->getItems($request, $propertyParams);
 
             // Элементы каталога
             $this->arResult['ELEMENTS'] = $elements['ITEMS'];
 
-            // Параметры, необходимые для работы пагинации
-            $this->arResult['PAGINATION_PARAMS'] = $elements['PAGINATION_PARAMS'];
-
+            // Параметр, необходимый для работы пагинации
             $this->arResult['NAV'] = $elements['NAV'];
 
-            // Передаём параметры сортировки
+            // Параметры сортировки и фильтрации
             $this->arResult['SORT_NAME'] = $request['SORT_NAME'];
             $this->arResult['SORT_ID'] = $request['SORT_ID'];
+            $this->arResult['FILTER'] = $elements['FILTER'];
 
             $this->includeComponentTemplate();
         }
     }
 
+    /**
+     * @param $propertyName
+     * @return array
+     */
+    private function getPropertyParams ($propertyName): array
+    {
+        $propertyParams = CIBlockPropertyEnum::GetList(
+            [],
+            ['CODE' => $propertyName]
+        );
+        $property = [];
+        while ($param = $propertyParams->GetNext()) {
+            $property[$param['XML_ID']] = $param['VALUE'];
+        }
+        return $property;
+    }
 
     /**
      * @param $request
+     * @param array $propertyParams
      * @return array
      */
-    private function getItems($request): array
+    private function getItems($request, array $propertyParams): array
     {
         $items = [];
         $filter = [
             'IBLOCK_ID' => $this->arParams['IBLOCK_ID'],
             'ACTIVE' => 'Y',
         ];
-        if ($request['FILTER'] ==='discounts') {
-            $filter['PROPERTY_SPECIAL_OFFER_VALUE'] = 'Акция';
-        } elseif ($request['FILTER'] ==='news') {
-            $filter['PROPERTY_SPECIAL_OFFER_VALUE'] = 'Новинка';
+        foreach ($propertyParams as $propertyXmlId => $property) {
+            if ($request['FILTER'] === $propertyXmlId) {
+                $filter['PROPERTY_SPECIAL_OFFER_VALUE'] = $property;
+                break;
+            }
         }
+
         $select = [
             'ID',
             'NAME',
@@ -99,13 +109,6 @@ class MyCatalogComponent extends CBitrixComponent
             $sort['ID'] = 'DESC';
         }
 
-
-//        $nav = new \Bitrix\Main\UI\PageNavigation('');
-//        $nav->allowAllRecords(true)
-//            ->setPageSize($this->arParams['ELEMENTS_PER_PAGE'])
-//            ->initFromUri();
-
-
         $elements = CIBlockElement::GetList (
             $sort,
             $filter,
@@ -116,13 +119,6 @@ class MyCatalogComponent extends CBitrixComponent
             ),
             $select
         );
-
-        //$nav->setRecordCount($elements->NavRecordCount);
-
-        //Bitrix\Main\Diag\Debug::dump($elements);
-
-        //Bitrix\Main\Diag\Debug::dump($elements->NavPageCount);
-        //Bitrix\Main\Diag\Debug::dump($elements->NavPageNomer);
 
         while($element = $elements->GetNext()) {
             // Обрезаем текст анонса
@@ -140,7 +136,7 @@ class MyCatalogComponent extends CBitrixComponent
 
         return Array(
             'ITEMS' => $items,
-            'PAGINATION_PARAMS' => $this->getPaginationParams($request, (int) $elements->NavPageCount),
+            'FILTER' => $this->getFilterParams($request),
             'NAV' => $elements
         );
     }
@@ -148,33 +144,17 @@ class MyCatalogComponent extends CBitrixComponent
 
     /**
      * @param $request
-     * @param int $pagesCount
-     * @return array
+     * @return string
      */
-    private function getPaginationParams($request, int $pagesCount): array
+    private function getFilterParams($request): string
     {
         if ($request['FILTER'] !== null) {
             $filter = '&FILTER=' . $request['FILTER'];
         } else {
             $filter = '';
         }
-        if ($request['SORT_NAME'] !== null) {
-            $sort = 'SORT_NAME=' . $request['SORT_NAME'];
-        } else {
-            $sort = '';
-        }
 
-        $currentPage = $this->getCurrentPage((int) $request['PAGE'], $pagesCount);
-
-        $pagesFrom = $currentPage < 5 ? 2 : $currentPage - 2;
-        $pagesTo = ($currentPage > $pagesCount - 3 ? $pagesCount - 1 : $currentPage + 2);
-
-        $pages = [];
-        for ($i = $pagesFrom; $i <= $pagesTo; $i++) {
-            $pages[] = $i;
-        }
-
-        return array('SORT' => $sort, 'FILTER' => $filter, 'PAGES' => $pages, 'CURRENT_PAGE' => $currentPage, 'PAGES_COUNT' => $pagesCount);
+        return $filter;
     }
 
 

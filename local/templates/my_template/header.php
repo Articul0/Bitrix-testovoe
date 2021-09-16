@@ -27,6 +27,6 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) {
 </head>
 <body>
 <div id="panel">
-    <?php $APPLICATION->ShowPanel(); ?>
+    <?php //$APPLICATION->ShowPanel(); ?>
 </div>
 
